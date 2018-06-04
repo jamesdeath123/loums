@@ -3,8 +3,8 @@ import { handleResponse } from '../util/responseHandler'
 
 let router = express.Router()
 
-router.get('/', function(req, res, next) {
-	res.response = '<div>hello world!</div>'
+router.post('/post', function(req, res, next) {
+	res = handleResponse(res, true, req.body.data)
 	next()
 })
 

@@ -1,9 +1,13 @@
 {
     "name": "loums",
-    "version": "0.0.1",
+    "version": "0.2.0",
     "private": true,
     "scripts": {
-        "start": "nodemon server/server.js --exec babel-node --presets babel-preset-env"
+        "start": "nodemon server/server.js --exec babel-node --presets babel-preset-env",
+        "test:integration": "mocha --compilers js:babel-core/register tests/integration/*/*.test.js",
+        "test:unit": "mocha --compilers js:babel-core/register tests/unit/*/*.test.js",
+        "test:all": "mocha --compilers js:babel-core/register tests/*/*/*.test.js",
+        "test": "mocha --compilers js:babel-core/register tests/unit/*/*.test.js"
     },
     "babel": {
         "presets": [
@@ -22,5 +26,13 @@
         "winston-daily-rotate-file": "^1.4.0",
         "winston": "^2.3.0",
         "nodemon": "1.17.3"
+    },
+    "devDependencies": {
+        "mocha": "3.5.3",
+        "babel-core": "6.26.0",
+        "babel-preset-env": "^1.6.1",
+        "chai": "^4.1.2",
+        "chai-http": "^4.0.0",
+        "sinon": "5.0.10"
     }
 }

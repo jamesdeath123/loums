@@ -1,7 +1,6 @@
 {
     "name": "loums",
     "version": "0.2.0",
-    "private": true,
     "scripts": {
         "start": "nodemon server/server.js --exec babel-node --presets babel-preset-env",
         "test:integration": "mocha --compilers js:babel-core/register tests/integration/*/*.test.js",
@@ -21,6 +20,8 @@
         "cors": "^2.7.1",
         "express": "^4.13.1",
         "morgan": "^1.6.1",
+        "mysql2": "^1.5.3",
+        "sequelize": "^4.37.6",
         "cuid": "^1.3.8",
         "uuid": "^2.0.2",
         "winston-daily-rotate-file": "^1.4.0",
@@ -28,6 +29,7 @@
         "nodemon": "1.17.3"
     },
     "devDependencies": {
+        "sequelize-cli": "2.3.1",
         "mocha": "3.5.3",
         "babel-core": "6.26.0",
         "babel-preset-env": "^1.6.1",

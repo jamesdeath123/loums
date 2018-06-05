@@ -4,7 +4,7 @@ import corsFilter from 'cors'
 import logger from 'morgan'
 import cuid from 'cuid'
 import appLogger from './util/logger'
-import articleControllers from './controllers/articleControllers'
+import postControllers from './controllers/postControllers'
 import indexControllers from './controllers/indexControllers'
 
 const app = express()
@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
 	next()
 })
 
-app.use('/articles', articleControllers)
+app.use('/posts', postControllers)
 app.use('/', indexControllers)
 
 app.use(function(req, res, next) {

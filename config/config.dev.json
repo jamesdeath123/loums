@@ -1,4 +1,17 @@
 {
+	"db" : {
+		"username": "loums_app_user",
+		"password" : "password",
+		"database" : "loums",
+		"host" : "127.0.0.1",
+		"port" : "3306",
+		"dialect" : "mysql",
+		"operatorsAliases": false,
+		"seederStorage": "sequelize",
+		"define": {
+			"underscored": true
+		}
+	},
 	"logger" : {
 		"path" : "/output/loums/logs/"
 	}

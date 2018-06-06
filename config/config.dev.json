@@ -13,6 +13,6 @@
 		}
 	},
 	"logger" : {
-		"path" : "/output/loums/logs/"
+		"path" : "./output/loums/logs/"
 	}
 }

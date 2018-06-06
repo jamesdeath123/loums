@@ -10,6 +10,17 @@ export default function(database, sequelize) {
 			allowNull: false,
 			isUnique: true
 		},
+		userId: {
+			type: sequelize.INTEGER(11),
+			allowNull: false,
+			field: "user_id",
+			references: {
+				model: 'users',
+				key: 'id'
+			},
+			onUpdate: "CASCADE",
+			onDelete: "CASCADE"
+		},
 		content: {
 			type: sequelize.STRING(280),
 			allowNull: false
@@ -32,22 +43,46 @@ export default function(database, sequelize) {
 	})
 
 	Posts.associate = function(entities) {
+		Posts.belongsTo(entities.Users)
 		Posts.hasMany(entities.PostHistory)
 	}
 
-	Posts.new = function(content, level) {
+	Posts.getByUUId = function(uuid) {
+		return Posts.findAll({where:{uuid},
+						include: [{model: entities.Users}]})
+	}
+
+	Posts.new = function(content, author, level) {
 		let createPost = new Promise((resolve, reject) => {
 			entities.PostActionTypes.find({name: 'create'})
 			.then(function(type) {
 				const uuidv4 = uuid.v4()
-				Posts.create({content, level, uuid: uuidv4})
-				.then(function(newPost) {
-					entities.PostHistory.create({postId: newPost.id, postActionTypeId: type.id})
-					.then(function() {
-						resolve(newPost.uuid)
-					}).catch(function(err){
-						reject(err)
-					})
+				entities.Users.find({where:{name: author}})
+				.then(function(user) {
+					if (!user) {
+						entities.Users.create({name: author})
+						.then(function(newUser) {
+							Posts.create({content, level, userId: newUser.id, uuid: uuidv4})
+							.then(function(newPost) {
+								//createPostHistory is not important so won't use callback to block next action
+								entities.PostHistory.create({postId: newPost.id, postActionTypeId: type.id})
+								resolve(newPost.uuidv4)
+							}).catch(function(err) {
+								reject(err)
+							})
+						}).catch(function(err) {
+							reject(err)
+						})
+					} else {
+						Posts.create({content, level, userId: user.id, uuid: uuidv4})
+						.then(function(newPost) {
+							//createPostHistory is not important so won't use callback to block next action
+								entities.PostHistory.create({postId: newPost.id, postActionTypeId: type.id})
+							resolve(newPost.uuidv4)
+						}).catch(function(err) {
+							reject(err)
+						})
+					}
 				}).catch(function(err){
 					reject(err)
 				})
@@ -56,6 +91,26 @@ export default function(database, sequelize) {
 			})
 		})
 		return createPost
+	}
+
+	Posts.getByAuthor = function(author) {
+		let getByAuthorPromise = new Promise((resolve, reject) => { entities.Users.find({where:{name:author}})
+		.then(function(user) {
+			if (!user) {
+				resolve({})
+			} else {
+				entities.Posts.findAll({where:{userId:user.id},
+						include: [{model: entities.Users}]})
+				.then(function(posts) {
+					resolve(posts)
+				}).catch(function(err) {
+					reject(err)
+				})
+			}
+		}).catch(function(err) {
+			reject(err)
+		})})
+		return getByAuthorPromise
 	}
 
 	return Posts

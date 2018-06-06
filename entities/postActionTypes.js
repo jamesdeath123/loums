@@ -16,10 +16,6 @@ export default function(database, sequelize) {
 		timestamps: false,
 		underscoredAll: true
 	})
-
-	PostActionTypes.associate = function(entities) {
-		PostActionTypes.hasMany(entities.PostHistory)
-	}
-
+	
 	return PostActionTypes
 }

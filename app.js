@@ -5,6 +5,7 @@ import logger from 'morgan'
 import cuid from 'cuid'
 import appLogger from './util/logger'
 import postControllers from './controllers/postControllers'
+import userControllers from './controllers/userControllers'
 import indexControllers from './controllers/indexControllers'
 
 const app = express()
@@ -24,6 +25,7 @@ app.use(function(req, res, next) {
 })
 
 app.use('/posts', postControllers)
+app.use('/users', userControllers)
 app.use('/', indexControllers)
 
 app.use(function(req, res, next) {

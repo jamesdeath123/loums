@@ -10,12 +10,24 @@ export default function(database, sequelize) {
 		postId: {
 			type: sequelize.INTEGER(11),
 			allowNull: false,
-			field: "post_id"
+			field: "post_id",
+			references: {
+				model: 'posts',
+				key: 'id'
+			},
+			onUpdate: "CASCADE",
+			onDelete: "CASCADE"
 		},
 		postActionTypeId: {
 			type: sequelize.INTEGER(11),
 			allowNull: false,
-			field: "post_action_type_id"
+			field: "post_action_type_id",
+			references: {
+				model: 'postActionTypes',
+				key: 'id'
+			},
+			onUpdate: "CASCADE",
+			onDelete: "CASCADE"
 		}
 	}, {
 		tableName: 'post_history',

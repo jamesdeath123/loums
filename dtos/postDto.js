@@ -1,5 +1,4 @@
 export default (post) => {
-	console.log(post)
 	return {
 		id: post.uuid,
 		author: post.User.name,

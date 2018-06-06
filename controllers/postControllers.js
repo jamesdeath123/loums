@@ -20,7 +20,7 @@ router.post('/new', function(req, res, next) {
 router.get('/:id', function(req, res, next) {
 	entities.Posts.getByUUId(req.params.id)
 	.then(function(result) {
-		if (!result) {
+		if (!result || JSON.stringify(result) === "{}") {
 			res = handleResponse(res, true, 0, [])
 			next()
 		} else {

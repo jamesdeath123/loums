@@ -10,10 +10,11 @@ router.get('/:userName/posts', function(req, res, next) {
 	const userName = req.params.userName
 	entities.Posts.getByAuthor(userName)
 	.then(function(results) {
-		if (!results) {
+		if (!results || JSON.stringify(results) === "{}") {
 			res = handleResponse(res, true, 0, {})
 			next()
 		} else {
+			console.log(results)
 			res = handleResponse(res, true, results.length, toDto(results, postDto))
 			next()
 		}

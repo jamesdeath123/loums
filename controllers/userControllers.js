@@ -14,10 +14,14 @@ router.get('/:userName/posts', function(req, res, next) {
 			res = handleResponse(res, true, 0, {})
 			next()
 		} else {
-			console.log(results)
 			res = handleResponse(res, true, results.length, toDto(results, postDto))
 			next()
 		}
+	}).catch(function(err) {
+		res.status = 500
+		console.log(err)
+		res = handleResponse(res, false, 0, {})
+		next()
 	})
 })
 

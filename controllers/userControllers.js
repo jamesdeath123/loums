@@ -18,8 +18,8 @@ router.get('/:userName/posts', function(req, res, next) {
 			next()
 		}
 	}).catch(function(err) {
+		appLogger.error(err)
 		res.status = 500
-		console.log(err)
 		res = handleResponse(res, false, 0, {})
 		next()
 	})

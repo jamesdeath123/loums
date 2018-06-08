@@ -37,7 +37,7 @@ app.use(function(req, res, next) {
 
 // error handlers
 app.use(function(err, req, res, next) {
-	console.log(err)
+	appLogger.error(err)
 	if (err.status === 404) {
 		res.status(404)
 		res.json({result: false, data:"Resource does not exist, or you do not have permission to access it."})

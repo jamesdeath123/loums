@@ -44,12 +44,22 @@ export default function(database, sequelize) {
 		level: {
 			type: sequelize.INTEGER(4),
 			allowNull: false
+		},
+		createdAt: {
+			type: sequelize.DATE,
+			allowNull: false,
+			field: 'created_at',
+			defaultValue: database.literal('CURRENT_TIMESTAMP')
+		},
+		updatedAt: {
+			type: sequelize.DATE,
+			allowNull: false,
+			field: 'updated_at',
+			defaultValue: database.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
 		}
 	}, {
 		tableName: 'posts',
 		timestamps: true,
-		createdAt: 'created_at',
-		updatedAt: 'updated_at',
 		underscoredAll: true
 	})
 
@@ -64,16 +74,28 @@ export default function(database, sequelize) {
 				Posts.find({where:{uuid},
 				include: [{model: entities.Users}]})
 			.then(function(post) {
-				Posts.findAll({where:{parentPostId: post.id}, include: [{model: entities.Users}]})
+				Posts.findAll({where:{parentPostId: post.id}, include: [{model: entities.Users}], order:[['createdAt', 'DESC']]})
 				.then(function(replyPosts) {
-					post.replies = replyPosts
-					resolve(post)
+					if (replyPosts.length > 0) {
+						let digReplies = []
+						for(let reply of replyPosts) {
+							let getReplies = Posts.getReplies(reply.uuid).then(function(subReplies) {
+								reply.replies = subReplies
+							})
+							digReplies.push(getReplies)
+						}
+						Promise.all(digReplies).then(function(subReplies) {
+							post.replies = replyPosts
+							resolve(post)
+						})
+					} else {
+						post.replyPosts = []
+						resolve(post)
+					}
 				}).catch(function(err) {
-					console.log(err)
 					reject(err)
 				})
 			}).catch(function(err) {
-					console.log(err)
 				reject(err)
 			})
 		})
@@ -85,7 +107,7 @@ export default function(database, sequelize) {
 			Posts.find({where:{uuid},
 				include: [{model: entities.Users}]})
 			.then(function(post) {
-				Posts.findAll({where:{parentPostId: post.id}, include: [{model: entities.Users}]})
+				Posts.findAll({where:{parentPostId: post.id}, include: [{model: entities.Users}], order:[['createdAt', 'DESC']]})
 				.then(function(replyPosts) {
 					if (replyPosts.length > 0) {
 						let digReplies = []
@@ -99,14 +121,13 @@ export default function(database, sequelize) {
 							resolve(replyPosts)
 						})
 					} else {
+						replyPosts.replies = []
 						resolve(replyPosts)
 					}
 				}).catch(function(err) {
-					console.log(err)
 					reject(err)
 				})
 			}).catch(function(err) {
-					console.log(err)
 				reject(err)
 			})
 		})
@@ -168,13 +189,27 @@ export default function(database, sequelize) {
 			if (!user) {
 				resolve({})
 			} else {
-				entities.Posts.findAll({where:{userId:user.id},
-						include: [{model: entities.Users}]})
+				entities.Posts.findAll({where:{userId:user.id, level: 1},
+						include: [{model: entities.Users}], order:[['createdAt', 'DESC']]})
 				.then(function(posts) {
-					resolve(posts)
-				}).catch(function(err) {
-					reject(err)
-				})
+					if (posts.length > 0) {
+						let replies = []
+						for(let post of posts) {
+							let getReplies = Posts.getReplies(post.uuid).then(function(subReplies) {
+								post.replies = subReplies
+							})
+							replies.push(getReplies)
+						}
+						Promise.all(replies).then(function() {
+							resolve(posts)
+						})
+					} else {
+						posts.replies = []
+						resolve(posts)
+					}
+					}).catch(function(err) {
+						reject(err)
+					})
 			}
 		}).catch(function(err) {
 			reject(err)

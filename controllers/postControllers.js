@@ -9,12 +9,13 @@ let router = express.Router()
 router.post('/new', function(req, res, next) {
 	const content = req.body.content
 	const author = req.body.author
-	const level = req.body.level
+	const level = 1
 	entities.Posts.new(content, author, level)
 	.then(function(result) {
 		res = handleResponse(res, true, 1, result)
 		next()
 	}).catch(function(err) {
+		appLogger.error(err)
 		res.status = 500
 		res = handleResponse(res, false, 0, {})
 		next()
@@ -32,7 +33,7 @@ router.get('/:id', function(req, res, next) {
 			next()
 		}
 	}).catch(function(err) {
-		console.log(err)
+		appLogger.error(err)
 		res.status = 500
 		res = handleResponse(res, false, 0, [])
 		next()
@@ -53,7 +54,7 @@ router.post('/:id/reply', function(req, res, next) {
 			next()
 		}
 	}).catch(function(err) {
-		console.log(err)
+		appLogger.error(err)
 		res.status = 500
 		res = handleResponse(res, false, 0, {})
 		next()
@@ -71,7 +72,7 @@ router.get('/:id/replies', function(req, res, next) {
 			next()
 		}
 	}).catch(function(err) {
-		console.log(err)
+		appLogger.error(err)
 		res.status = 500
 		res = handleResponse(res, false, 0, [])
 		next()
